@@ -1,0 +1,252 @@
+---
+title: "Assignment 2"
+author: "Maharaj Teertha Deb, 40227747"
+date: "2024-02-01"
+output: pdf_document
+---
+
+ Assignment 2
+
+# TextBook Problems:
+
+## Question 1:
+
+```{latex}
+Create the vector:
+[1] 0 0 0 1 1 1 1 0 0 0 1 1 1 1 
+[34] 1 1 0 1 1 1 1 0 0 0 1 1 1 1 0 0 0 1 1
+
+and convert it to a factor. Identify the levels of the result, and then change the level 
+labels to obtain the factor:
+
+[1] Male Male Male Female Female Female Female Male
+[10] Male Female Female Female Female Male Male Male Male Male Male Female 
+      Female Female Female
+[19] Female Female Female Male
+[28] Female Male Male Male
+
+Levels: Male Female
+```
+
+## Answer:
+```{r}
+# Create the vector
+vector <- c(0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 
+            1, 1, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1, 1, 1, 0, 0, 0, 1, 1)
+
+# Convert it to a factor
+gender_factor <- factor(vector)
+levels(gender_factor)[1] <- "Male"
+levels(gender_factor)[2] <- "Female"
+
+# Print the result
+print(gender_factor)
+
+```
+
+## Question 2:
+```{latex}
+  Use the `more.colors` vector, `rep()`, and `seq()` to create the vector
+
+"red" "yellow" "blue" "yellow" "blue" "green"
+"blue" "green" "magenta" "green" "magenta" "cyan"
+```
+
+## Answer:
+```{r}
+# R code to create the vector
+more.colors <- c("red","yellow","blue","green","magenta","cyan")
+more.colors[rep(seq(0 , 2) , times = 4) + rep( seq(0 : 3) , each = 3)]
+```
+
+## Question 3:
+```{latex}
+Convert the character vector from the preceding exercise to a factor.
+What are the levels of the factor? 
+Change the "blue" label to "turquoise".
+```
+
+## Answer:
+```{r}
+# R code to convert the character vector to a factor
+factor_vector <- factor(more.colors)
+cat("Labels for the factor vector: " , labels(factor_vector))
+levels(factor_vector)[levels(factor_vector) == "blue"] <- "turquoise"
+factor_vector
+```
+
+
+# Text Book problem:
+
+## Question 4:
+
+Use R to identify the elements of the sequence $\{2^1, 2^2, \ldots, 2^{15}\}$ that exceed the corresponding elements of the sequence $\{1^3, 2^3, \ldots, 15^3\}$.
+
+
+## Answer:
+```{r}
+n <- 1 : 15
+m1 <- 2^n # sequence 1
+m2 <- n^3 # sequence 2
+
+print("The elements in the first sequence that are greater than the last sequence:")
+m1[m1 > m2]
+```
+
+
+## Question 5:
+Evaluation of a square root is achieved using the \texttt{sqrt()} function, but a warning will be issued when the argument is negative. Consider the following code which is designed to test whether a given value is positive before checking whether the square root of the value is less than 5.
+
+```{latex}
+testValue <- 7
+(testValue > 0) & (sqrt(testValue) < 5)
+## [1] TRUE
+
+testValue <- -7
+if (testValue > 0) {
+  result <- (sqrt(testValue) < 5)
+} else {
+  result <- FALSE
+}
+result
+## [1] FALSE
+
+Modify the code so that it continues to give the correct answer but without the warning.
+```
+
+
+
+## Answer:
+```{r}
+testValue <- 7
+(testValue > 0) && (sqrt(testValue) < 5)
+
+testValue <- -7
+(testValue > 0) && (sqrt(testValue) < 5) # show answer no warning.
+
+```
+
+
+# Addictional Problems:
+
+## 1:
+Generate the following sequences using seq() and rep():
+
+### a:
+2, 4, 6, 8, ..., 22.
+
+### Answer:
+```{r}
+seq(2 , 22 , by = 2)
+```
+
+### b: 
+1, 5, 25, 125, ..., 9765625
+
+### Answer:
+```{r}
+5^(0 : 10)
+```
+
+### c:
+11, 12, 13, 11, 12, 13, ... 13, 11, 12, 13 (each entry appearing 7 times).
+
+### Answer:
+```{r}
+rep((11 : 13) , 7)
+```
+
+
+### d:
+1, 1, 1, 2, 2, 2, ..., 6, 6, 6
+
+### Answer:
+```{r}
+rep((1 : 6) , each = 3)
+```
+
+
+### e:
+60, 57, 54, ..., 15, 12
+
+
+### Answer:
+```{r}
+seq(60, 12, by = -3)
+```
+
+
+### f:
+1, 2, 5, 10, 20, 50, 100, 200, 500, 1000, 2000, 5000, 10000,20000, 50000
+
+### Answer:
+```{r}
+initial <- c(1 , 2 , 5)
+
+c(initial , initial ^ 10 , initial ^ 100 , initial ^ 1000 , initial ^ 10000)
+```
+
+
+## 2:
+Create a vector containing each of the following sequences:
+
+### a:
+$\tan\left(\frac{\pi n}{7}\right)$, for $n = 0, 1, 2, \ldots, 10$.
+
+
+### Answer:
+```{r}
+tan(pi * 0:10 / 7)
+```
+
+### b:
+1, 4, 23, 122, 621, 3120, 15619, 78118, 390617.
+
+### Answer:
+```{r}
+n <- 0 : 8
+
+c(5^n - n)
+```
+
+### c:
+3n - 3n, for \( n = 0, 1, 2, \ldots, 10 \).
+
+### Answer:
+```{r}
+n <- 0 : 10
+
+c(3^n - 3*n)
+```
+
+### d:
+Compute the sequence \(5n \mod 3\) for \(n = 0, 1, 2, \ldots, 10\) (i.e., the remainder of \(5n/3\) for \(n = 0, 1, 2, \ldots, 10\)).
+
+### Answer:
+```{r}
+c(5 * seq(0, 10) %% 3)
+```
+
+### e:
+Let $S_n = \sum_{i=1}^{n} \frac{2i-1}{(-1)^{i+1}} = 1 - \frac{3}{1} + \frac{5}{1} - \frac{7}{1} + \ldots + \frac{2n-1}{(-1)^{n+1}}$. It can be shown that $\lim_{n \to \infty} S_n = \frac{\pi}{4}$. 
+
+Evaluate $4S_{10}$, $4S_{100}$, and $4S_{1000}$. (Hint: use the `sum()` function).
+
+
+### Answer:
+```{r}
+
+# Function to calculate Sn
+Sn <- function(n) {
+  sum((2*(1:n)-1) / (-1)^(1:n))
+}
+
+
+S_10 <- 4 * Sn(10)
+S_100 <- 4 * Sn(100)
+S_1000 <- 4 * Sn(1000)
+
+
+c(S_10, S_100, S_1000)
+
+```
