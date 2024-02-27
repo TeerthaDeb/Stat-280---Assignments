@@ -5,10 +5,10 @@ date: "2024-02-27"
 output: pdf_document
 ---
 
-
 # Section 3.1
 
-## Problem 1 : 
+## Problem 1 :
+
 Consider the islands vector discussed in this section.
 
 (a) Compare the histograms that result when using breaks based on Sturges' and Scott's rules. Make this comparison on the log scale and on the original scale.
@@ -47,6 +47,7 @@ boxplot(log(islands), main = "Log scale")
 (d) Construct a dot chart of the areas. Is a log transformation needed here?
 
 ### (d) Answer:
+
 ```{r}
 par(mfrow=c(1,2))
 dotchart(islands,main="Original scale")
@@ -56,20 +57,21 @@ dotchart(log(islands),main="Log scale")
 (e) Which form of graphic do you think is most appropriate for displaying these data?
 
 ### (e) Answer:
+
 ```{r}
 dotchart(sort(log(islands)), main = "Log scale, sorted")
 ```
 
-
-
 ## Problem 3:
 
-Consider the pressure data frame. There are two columns temperature and pressure 
+Consider the pressure data frame. There are two columns temperature and pressure
 
 ### (a)
-Construct a scatterplot with pressure on the vertical axis and temperature on the horizontal axis. Are the variables related linearly or nonlinearly? 
+
+Construct a scatterplot with pressure on the vertical axis and temperature on the horizontal axis. Are the variables related linearly or nonlinearly?
 
 ### (a) Answer:
+
 ```{r}
 plot(pressure ~ temperature, data = pressure)# Calculate correlation coefficient
 
@@ -85,12 +87,12 @@ if(abs(correlation) < 0.005) {
 
 ```
 
-### (b) 
-The graph of the following function passes through the plotted points reasonably well: \( y = (0.168 + 0.007x)^{\frac{20}{3}} \). The differences between the pressure values predicted by the curve and the observed pressure values are called residuals. Here is a way to calculate them: 
-\[ \text{residuals} <- with(\text{pressure}\ , \text{pressure} - (0.168 + 0.007 \times \text{temperature})^{\frac{20}{3}} \]
-Construct a normal QQ plot of these residuals and decide whether they are normally distributed or whether they follow a skewed distribution. 
+### (b)
+
+The graph of the following function passes through the plotted points reasonably well: $y = (0.168 + 0.007x)^{\frac{20}{3}}$. The differences between the pressure values predicted by the curve and the observed pressure values are called residuals. Here is a way to calculate them: $$ \text{residuals} <- with(\text{pressure}\ , \text{pressure} - (0.168 + 0.007 \times \text{temperature})^{\frac{20}{3}} $$ Construct a normal QQ plot of these residuals and decide whether they are normally distributed or whether they follow a skewed distribution.
 
 ### (b) Answer:
+
 ```{r}
 # Calculate residuals
 predicted_pressure <- (0.168 + 0.007 * pressure$temperature)^(20/3)
@@ -104,10 +106,12 @@ qqline(residuals, col = 2)
 shapiro.test(residuals)
 ```
 
-### (c) 
-Now, apply the power transformation \( y^{\frac{3}{20}} \) to the pressure data values. Plot these transformed values against temperature. Is a linear or nonlinear relationship evident now?
+### (c)
+
+Now, apply the power transformation $y^{\frac{3}{20}}$ to the pressure data values. Plot these transformed values against temperature. Is a linear or nonlinear relationship evident now?
 
 ### (c) Answer:
+
 ```{r}
 # Apply the power transformation y^(3/20) to pressure data values
 transformed_pressure <- pressure$pressure^(3/20)
@@ -133,10 +137,12 @@ if(abs(correlation_transformed) < 0.005) {
 
 ```
 
-### (d) 
+### (d)
+
 Calculate residuals for the difference between transformed pressure values and those predicted by the straight line. Obtain a normal QQ plot, and decide whether the residuals follow a normal distribution or not.
 
 ### (d) Answer:
+
 ```{r}
 # Fit a linear regression model to transformed pressure values and temperature
 lm_model_transformed <- lm(transformed_pressure ~ pressure$temperature)
@@ -156,8 +162,85 @@ shapiro.test(residuals_transformed)
 
 ```
 
-
-
 # Section 3.3
 
+## Problem 4
 
+Re-do the plots of Figure 3.18, but this time apply the six graphics functions to a variable $X$ which is defined by $X = Z^2$, where $Z$ is a simulated standard normal random variable as in the example. Comment on the changes that you see in the plots. (The variable $X$ is an example of a chi-squared random variable on one degree of freedom.) Refer to the previous question.
+
+### Answer:
+
+```{r}
+
+# Load necessary library
+library(MASS)  # For mvrnorm function
+
+# Generate simulated standard normal random variable Z
+set.seed(123)  # for reproducibility
+Z <- rnorm(1000)
+
+# Define variable X = Z^2
+X <- Z^2
+
+# Plotting Figure 3.18 with variable X
+par(mfrow = c(3, 2))  # Set up a 3x2 layout for plots
+
+# Plot histogram
+hist(X, main = "Histogram of X")
+
+# Plot ECDF
+plot(ecdf(X), main = "Empirical Cumulative Distribution Function of X")
+
+# Plot QQ plot
+qqnorm(X, main = "QQ Plot of X")
+qqline(X)
+
+# Plot boxplot
+boxplot(X, main = "Boxplot of X")
+
+# Plot scatterplot of X against itself
+plot(X, X, xlab = "X", ylab = "X", main = "Scatterplot of X against itself")
+
+# Plot density plot
+plot(density(X), main = "Density Plot of X")
+```
+
+## Problem 5:
+
+Construct another set of six plots as in Figure 3.18, but this time applied to the data in EuStockMarkets. (i.e., apply the code of Figure 3.18 to $Z$, where $Z = \text{EuStockMarkets}$). Comment on the results, and use the summary()} function to gain further insight. Which of the six plots are useful descriptors of this dataset, and which may be limited in their usefulness?
+
+### Answer:
+
+```{r}
+
+# Now, apply the same set of plots to EuStockMarkets data
+data("EuStockMarkets")
+
+# Plotting Figure 3.18 with EuStockMarkets data
+Z <- EuStockMarkets[, 1]  # Using the first column of EuStockMarkets data
+X <- Z^2
+
+par(mfrow = c(3, 2))  # Set up a 3x2 layout for plots
+
+# Plot histogram
+hist(X, main = "Histogram of X")
+
+# Plot ECDF
+plot(ecdf(X), main = "Empirical Cumulative Distribution Function of X")
+
+# Plot QQ plot
+qqnorm(X, main = "QQ Plot of X")
+qqline(X)
+
+# Plot boxplot
+boxplot(X, main = "Boxplot of X")
+
+# Plot scatterplot matrix
+plot(X, X, xlab = "X", ylab = "X", main = "Scatterplot of X against itself")
+
+# Plot density plot
+plot(density(X), main = "Density Plot of X")
+
+# Comment on the results and use summary() function to gain further insight
+summary(X)
+```
