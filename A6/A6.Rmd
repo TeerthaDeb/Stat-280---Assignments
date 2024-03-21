@@ -1,0 +1,305 @@
+---
+title: "Untitled"
+author: "Maharaj Teertha Deb, 40227747"
+date: "2024-03-21"
+output: pdf_document
+---
+
+# Problem 1 :
+The variable old Fib2 isn’t strictly necessary. Rewrite the Fibonacci while() loop with the update of Fib1 based just on the current values of Fib1 and Fib2.
+
+## Solution:
+```{r}
+Fib1 <- 0
+Fib2 <- 1
+Fibonacci <- c(Fib1, Fib2)
+
+while (Fib2 < 300) {
+  nextFib <- Fib1 + Fib2
+  Fibonacci <- c(Fibonacci, nextFib)
+  Fib1 <- Fib2
+  Fib2 <- nextFib
+}
+
+print(Fibonacci)
+```
+
+
+# Problem 2:
+In fact, Fib1 and Fib2 aren’t necessary either. Rewrite the Fibonacci while() loop without using any variables except Fibonacci.
+
+## Solution:
+```{r}
+Fibonacci <- c(0, 1)
+
+while (Fibonacci[length(Fibonacci)] + Fibonacci[length(Fibonacci) - 1] < 300) {
+  nextFib <- Fibonacci[length(Fibonacci)] + Fibonacci[length(Fibonacci) - 1]
+  Fibonacci <- c(Fibonacci, nextFib)
+}
+print(Fibonacci)
+```
+
+
+# Problem 3:
+Determine the number of Fibonacci numbers less than 1000000
+
+## Solution:
+```{r}
+Fibonacci <- c(1, 1, 1)
+
+while (max(Fibonacci) < 1000000){
+  Fibonacci <- c(Fibonacci, Fibonacci[length(Fibonacci)]+
+  Fibonacci[length(Fibonacci)-1])
+}
+
+sum(Fibonacci < 1000000)
+```
+
+
+# Problem 4:
+Recall the car dealer interest rate example in Example 4.4. Use a `while ()` loop to iteratively calculate the interest rate \(i\) which satisfies the fixed-point equation 
+
+\[
+i = \frac{{1 - (1 + i)^{-20}}}{19}
+\]
+
+Use a starting guess of \(i = 0.006\). Stop the calculation when two successive values of the interest rate are less than \(0.000001\) apart. What happens when you try other starting guesses? Referring to the previous exercise, modify your code so that it also computes the number of iterations required to get two successive values of the interest rate that are less than \(0.000001\) apart.
+
+
+## Solution:
+```{r}
+# Function to calculate the interest rate using the fixed-point equation
+calculate_interest <- function(guess, tolerance = 0.000001) {
+  iter <- 0
+  prev_guess <- guess + 2 * tolerance # To ensure the loop starts
+  
+  while (abs(prev_guess - guess) >= tolerance) {
+    prev_guess <- guess
+    guess <- (1 - (1 + guess)^(-20)) / 19
+    iter <- iter + 1
+  }
+  
+  return(list(interest_rate = guess, iterations = iter))
+}
+
+# Initial guess for interest rate
+initial_guess <- 0.006
+
+# Calculate interest rate and number of iterations
+result <- calculate_interest(initial_guess)
+
+# Print the result
+cat("Interest rate:", result$interest_rate, "\n")
+cat("Number of iterations:", result$iterations, "\n")
+```
+
+
+# Problem 5:
+Referring to the previous exercise, modify your code so that it also computes the number of iterations required to get two successive values of the interest rate that are less than 0.000001 apart.
+
+## Solution:
+```{r}
+# Function to calculate the interest rate using the fixed-point equation
+calculate_interest <- function(guess, tolerance = 0.000001) {
+  iter <- 0
+  prev_guess <- guess + 2 * tolerance # To ensure the loop starts
+  
+  while (abs(prev_guess - guess) >= tolerance) {
+    prev_guess <- guess
+    guess <- (1 - (1 + guess)^(-20)) / 19
+    iter <- iter + 1
+  }
+  
+  return(list(interest_rate = guess, iterations = iter))
+}
+
+# Initial guess for interest rate
+initial_guess <- 0.006
+
+# Calculate interest rate and number of iterations
+result <- calculate_interest(initial_guess)
+
+# Print the result
+cat("Interest rate:", result$interest_rate, "\n")
+cat("Number of iterations:", result$iterations, "\n")
+```
+
+
+
+
+# Problem 6:
+Find a minimizer of the function \( f(x) = (x - 3)^4 + 7(x - 2)^2 + x \).
+
+## Solution:
+```{r}
+# Define the objective function
+f <- function(x) {
+  return((x - 3)^4 + 7 * (x - 2)^2 + x)
+}
+
+# Use optim() function to minimize the objective function
+result <- optim(par = 0, fn = f, method = "Brent", lower = -10, upper = 10)
+
+# Print the minimizer
+cat("Minimizer of the function:", result$par, "\n")
+```
+
+# Problem 7:
+How many zeros does the function \( f(x) = \frac{{5x - 3}}{{x - 1}} \) have? What are they? Describe the behavior of Newton's method applied to this function if the initial guess is:
+
+(a) 0.5
+
+(b) 0.75
+
+(c) 0.2
+
+(d) 1.25
+
+
+## Solution:
+```{r}
+# Define the function
+f <- function(x) {
+  return ((5*x - 3)/(x - 1))
+}
+
+# Define the derivative of the function
+f_prime <- function(x) {
+  return ((5*(x - 1) - (5*x - 3))/((x - 1)^2))
+}
+
+# Implement Newton's method
+newton_method <- function(guess) {
+  tol <- 0.0001  # tolerance for convergence
+  max_iter <- 100  # maximum number of iterations
+  
+  x <- guess
+  iter <- 0
+  
+  while(iter < max_iter) {
+    x_new <- x - f(x)/f_prime(x)
+    
+    # Check if the function value is within tolerance
+    if (!is.na(f(x_new)) && abs(f(x_new)) < tol) {
+      return(list(zero = x_new, iterations = iter + 1))
+    }
+    
+    x <- x_new
+    iter <- iter + 1
+  }
+  
+  # Return NaN if no convergence within max_iter
+  return(list(zero = NaN, iterations = max_iter))
+}
+
+# Define initial guesses
+initial_guesses <- c(0.5, 0.75, 0.2, 1.25)
+
+# Apply Newton's method with different initial guesses
+results <- lapply(initial_guesses, newton_method)
+
+# Print results
+for (i in 1:length(results)) {
+  cat("Initial guess:", initial_guesses[i], "\n")
+  cat("Zero found:", results[[i]]$zero, "\n")
+  cat("Number of iterations:", results[[i]]$iterations, "\n\n")
+}
+```
+
+
+## Problem 8:
+How many zeros does the function \( f(x) = (x^2 - 6x + 9)e^{-x} \) have? What are they? Describe the behavior of Newton's method applied to this function if the initial guess is:
+(a) \( x_0 = 3 \)
+(b) \( x_0 = 3.2 \)
+(c) \( x_0 = 2.99 \)
+(d) \( x_0 = 3.01 \)
+
+## Solution:
+```{r}
+# Define the function f(x)
+f <- function(x) {
+  return((x^2 - 6*x + 9) * exp(-x))
+}
+
+# Define the derivative of the function f'(x)
+f_der <- function(x) {
+  return((2*x - 6) * exp(-x) + (x^2 - 6*x + 9) * (-exp(-x)))
+}
+
+# Define initial guesses
+initial_guesses <- c(3, 3.2, 2.99, 3.01)
+
+# Define tolerance to stop the loop
+tolerance <- 1e-3
+
+# Run the loop for each initial guess
+for (guess in initial_guesses) {
+  
+  # Set the initial guess
+  x <- guess
+  
+  # Run Newton's method
+  while (TRUE) {
+    # Calculate next value of x
+    x_next <- x - (f(x) / f_der(x))
+    
+    # Check if derivative of function is zero
+    if (is.na(x_next)) {
+      cat("Derivative of function is zero, cannot be evaluated further.\n")
+      break
+    }
+    
+    # Calculate error
+    error <- abs(x_next - x)
+    
+    # Check if error is less than tolerance
+    if (error < tolerance) {
+      cat("With initial guess of", guess, "Root is", x_next, "\n")
+      break
+    } else {
+      # Update the parameter
+      x <- x_next
+    }
+  }
+}
+
+```
+
+
+
+
+# Problem 9:
+We could implement the Sieve of Eratosthenes using a while () loop.
+(c) Modify this function using break to take advantage of the above result.
+
+## Solution:
+```{r}
+sieve_of_eratosthenes <- function(n) {
+  primes <- vector(mode = "logical", length = n + 1)
+  primes[2:n] <- TRUE
+  
+  p <- 2
+  while (TRUE) {
+    # Mark multiples of p as non-prime
+    primes[p * 2:n] <- FALSE
+    
+    # Find the next prime number
+    for (i in (p + 1):n) {
+      if (primes[i]) {
+        p <- i
+        break  # Move to the next prime
+      }
+    }
+    
+    # If there's no more prime to find, break the loop
+    if (p^2 > n) {
+      break
+    }
+  }
+  
+  # Return the list of prime numbers
+  return(which(primes))
+}
+
+print(sieve_of_eratosthenes(3000))
+```
