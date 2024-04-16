@@ -1,0 +1,185 @@
+---
+title: "Question 6"
+author: "Maharaj Teertha Deb, 40227747"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+# Problem 6:
+
+## Part I:
+
+An eyeglass shop has $n$ eyeglasses to sell and makes \$1.00 on each sale.
+
+Say the number of consumers of these eyeglasses is a random variable with a density function that can be approximated by
+
+$$ f(x) = \frac{1}{200}, \quad 0 < x < 200, $$
+
+a pdf of the continuous type.
+
+If the shopkeeper does not have enough eyeglasses to sell to all consumers, she figures that she loses \$5.00 in goodwill from each unhappy customer.
+
+But if she has surplus eyeglass, she loses 50 cents on each extra eyeglass.
+
+### Question i:
+
+i.  What should $n$, the number of eyeglasses, be to maximize profit?
+
+(Hint: Note that the expected profit is:
+
+$$ E(Profit) = \int_{0}^{n} \left(x - \frac{1}{2}(n-x)\right)\frac{1}{200} dx + \int_{n}^{200} \left(n - 5(x-n)\right)\frac{1}{200} dx $$
+
+where $0 < x < n$ and $n < x < 200$)
+
+#### Answer:
+
+To solve for the optimal number of eyeglasses $n$ to maximize profit, we need to differentiate the expected profit function with respect to $n$ and find the value of $n$ where the derivative equals zero.
+
+Given:
+
+$$ E(Profit) = \int_{0}^{n} \left(x - \frac{1}{2}(n-x)\right)\frac{1}{200} dx + \int_{n}^{200} \left(n - 5(x-n)\right)\frac{1}{200} dx $$
+
+We'll differentiate $E(Profit)$ with respect to $n$:
+
+$$ \frac{d}{dn} E(Profit) = \frac{d}{dn} \frac{1}{200} \left( \int_{0}^{n} \left(x - \frac{1}{2}(n-x)\right) dx + \int_{n}^{200} \left(n - 5(x-n)\right) dx \right) $$
+
+$$ \frac{d}{dn} E(Profit) = \frac{1}{200} \left( \frac{d}{dn} \int_{0}^{n} \left(x - \frac{1}{2}(n-x)\right) dx + \frac{d}{dn} \int_{n}^{200} \left(n - 5(x-n)\right) dx \right) $$
+
+$$ \frac{d}{dn} E(Profit) = \frac{1}{200} \left( \left[ x - \frac{1}{2}(n-x) \right]_{0}^{n} + \left[ n - 5(x-n) \right]_{n}^{200} \right) $$
+
+$$ \frac{d}{dn} E(Profit) = \frac{1}{200} \left( \left( n - \frac{1}{2}n \right) - \left( 0 - \frac{1}{2}n \right) + \left( 200 - 5(200-n) \right) - \left( n - 5(n-n) \right) \right) $$
+
+$$ \frac{d}{dn} E(Profit) = \frac{1}{200} \left( \frac{1}{2}n + 200 - 5(200-n) - n \right) $$
+
+$$ \frac{d}{dn} E(Profit) = \frac{1}{200} \left( \frac{1}{2}n + 200 - 1000 + 5n - n \right) $$
+
+$$ \frac{d}{dn} E(Profit) = \frac{1}{200} \left( 4.5n - 800 \right) $$
+
+Now, we set the derivative equal to zero and solve for $n$:
+
+$$ \frac{1}{200} \left( 4.5n - 800 \right) = 0 $$
+
+$$ 4.5n - 800 = 0 $$
+
+$$ 4.5n = 800 $$
+
+$$ n = \frac{800}{4.5} $$
+
+$$ n \approx 177.78 $$
+
+Therefore, to maximize profit, the shop should have approximately $178$ eyeglasses.
+
+### Question ii:
+
+Simulate 100 sales of the shop.
+
+#### Answer:
+
+```{r}
+# Define parameters
+n <- 178  # Number of eyeglasses
+price_per_sale <- 1.00
+loss_per_unhappy_customer <- 5.00
+loss_per_extra_eyeglass <- 0.50
+density_function <- function(x) ifelse(x > 0 & x < 200, 1/200, 0)  # Density function
+
+# Simulate 100 sales
+sales <- replicate(100, {
+  # Generate random number of customers
+  customers <- rpois(1, lambda = n)
+  
+  # Calculate expected number of sales
+  expected_customers <- integrate(density_function, lower = 0, upper = Inf)$value
+  expected_sales <- min(n, expected_customers)
+  
+  # Calculate profit and loss
+  actual_sales <- min(n, customers)
+  profit <- actual_sales * price_per_sale
+  loss_unhappy_customers <- max(0, customers - actual_sales) * loss_per_unhappy_customer
+  loss_surplus_eyeglasses <- max(0, n - customers) * loss_per_extra_eyeglass
+  
+  # Total profit after losses
+  total_profit <- profit - loss_unhappy_customers - loss_surplus_eyeglasses
+  
+  return(total_profit)
+})
+
+# Calculate total profit over 100 sales
+total_profit <- sum(sales)
+
+# Print total profit
+print(paste("Total profit over 100 sales:", total_profit))
+```
+
+## Part ii:
+
+For uniform (0,1) random variables $U_1, U_2, U_3, \ldots$, define
+
+$$ N = \text{minimum} \{ n : \sum_{i=1}^{n} U_i > 1 \} $$
+
+That is, $N$ is equal to the number of random numbers that must be summed to exceed 1.
+
+### Question i:
+
+Estimate $E(N)$ by generating 100 values of $N$.
+
+#### Answer:
+
+```{r}
+# Define the number of simulations
+num_simulations <- 100
+
+# Function to simulate N
+simulate_N <- function() {
+  sum_U <- 0
+  N <- 0
+  while (sum_U <= 1) {
+    sum_U <- sum_U + runif(1)
+    N <- N + 1
+  }
+  return(N)
+}
+
+# Generate 100 values of N
+N_values <- replicate(num_simulations, simulate_N())
+
+# Estimate E(N)
+estimated_mean_N <- mean(N_values)
+
+# Print the estimated mean
+print(paste("Estimated E(N) based on 100 simulations:", estimated_mean_N))
+```
+
+### Question ii:
+
+Calculate the exact value of $E(N)$.
+
+#### Answer:
+
+To calculate the exact value of $E(N)$, we need to find the expected value of the random variable $N$. Given the definition of $N$ as the minimum number of random variables that must be summed to exceed 1, we can derive its probability distribution and then calculate the expected value.
+
+Let's denote $X_i$ as the $i$-th uniform (0,1) random variable, and let $p_k$ be the probability that $N = k$. Then $p_k$ is the probability that the sum of the first $k$ random variables exceeds 1 while the sum of the first $k-1$ random variables is less than or equal to 1.
+
+Therefore, we have:
+
+$$ p_k = P(N = k) = P(X_1 + X_2 + \ldots + X_k > 1, X_1 + X_2 + \ldots + X_{k-1} \leq 1) $$
+
+$$ = P(X_1 + X_2 + \ldots + X_k > 1) - P(X_1 + X_2 + \ldots + X_{k-1} > 1) $$
+
+$$ = \left(1 - P(X_1 + X_2 + \ldots + X_k \leq 1)\right) - \left(1 - P(X_1 + X_2 + \ldots + X_{k-1} \leq 1)\right) $$
+
+$$ = P(X_1 + X_2 + \ldots + X_{k-1} < 1) - P(X_1 + X_2 + \ldots + X_{k-1} \leq 1) $$
+
+$$ = P(X_1 + X_2 + \ldots + X_{k-1} < 1) - P(X_1 + X_2 + \ldots + X_{k-1} < 1) + P(X_k < 1) $$
+
+$$ = P(X_k < 1) $$
+
+Since $X_i$ follows a uniform distribution on the interval (0,1), $P(X_i < 1) = 1$ for all $i$.
+
+Therefore, $p_k = 1$ for all $k$.
+
+Now, we have a geometric distribution with parameter $p = 1$, where $p$ is the probability of success (i.e., $N = k$). In a geometric distribution, the expected value $E(N)$ is given by $E(N) = \frac{1}{p}$.
+
+Since $p = 1$, we have $E(N) = \frac{1}{1} = 1$.
+
+So, the exact value of $E(N)$ is 1.

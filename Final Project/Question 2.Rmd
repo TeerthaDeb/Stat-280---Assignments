@@ -1,0 +1,306 @@
+---
+title: "Question 2"
+author: "Maharaj Teertha Deb, 40227747"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+# Problem 2:
+
+The objective of this problem is to implement an efficient root finding technique for polynomials. In this problem, a polynomial with coefficients $C_1, \ldots, C_{n+1}$ is defined as:
+
+$$ P(x) = C_{n+1}x^{n} + C_{n}x^{n-1} + \ldots + C_2x + C_1 $$
+
+## Question 1:
+
+Create a function with the header $$ \texttt{EvalPoly <- function(c, x)} $$ that evaluates a polynomial $P(x)$ with coefficients $C_1, \ldots, C_{n+1}$ (stored in the vector $\texttt{c}$) at the point $z$.
+
+### Answer:
+
+```{r}
+# Function to evaluate a polynomial
+EvalPoly <- function(c, x) {
+  # Initialize the result
+  result <- 0
+  # Iterate over coefficients
+  for (i in seq_along(c)) {
+    # Compute the term contribution and add to result
+    result <- result + c[i] * x^(length(c) - i)
+  }
+  return(result)
+}
+```
+
+## Question 2:
+
+Evaluate the polynomial $P(x) = 3.5x^3 - 1.72 + 1$ at $x = 13.4$ using the function `EvalPoly`.
+
+### Answer:
+
+```{r}
+# Define the coefficients of the polynomial
+coefficients <- c(3.5, 0, 0, -1.72 + 1)
+
+# Call the EvalPoly function
+result <- EvalPoly(coefficients, 13.4)
+
+# Print the result
+print(result)
+```
+
+## Question 3:
+
+Create a function with the header `PolyDerEval <- function(c, x)` that evaluates the derivative of a polynomial $P(x)$ with coefficients $C_1, \ldots, C_{n+1}$ at the point $x$.
+
+### Answer:
+
+```{r}
+# Define the function PolyDerEval
+PolyDerEval <- function(c, x) {
+  # Initialize the derivative
+  derivative <- 0
+  # Iterate over coefficients
+  for (i in seq_along(c)) {
+    # Compute the derivative term contribution and add to derivative
+    derivative <- derivative + (length(c) - i) * c[i] * x^(length(c) - i - 1)
+  }
+  # Return the answer
+  return(derivative)
+}
+```
+
+## Question 4:
+
+Test the function PolyDerEval by evaluating P'(x), where P(x) and x are as defined in part 2..
+
+### Answer:
+
+```{r}
+# Define the coefficients of the polynomial P(x)
+coefficients <- c(3.5, 0, 0, -1.72 + 1)
+
+# Define the value of x
+x <- 13.4
+
+# Call the PolyDerEval function to evaluate the derivative P'(x)
+derivative <- PolyDerEval(coefficients, x)
+
+# Print the result
+print(derivative)
+```
+
+## Quesion 5:
+
+Create a function with the header `NewtonPoly <- function(c, x0, TOL)` that implements Newton's method applied to a polynomial `P(x)` defined by coefficients in `c`. This function should use the `EvalPoly` and `PolyDerEval` functions to evaluate `P(x)` and its derivative `P'(x)`. The function should return the vector of computed approximations `x_1, x_2, ..., x_k` and stop as soon as `||P(x_k)|| < TOL` or `k > 1000`.
+
+### Answer:
+
+To implement the `NewtonPoly` function, we need to follow these steps:
+
+1.  Initialize an empty vector to store the computed approximations.
+2.  Iterate until the stopping condition is met:
+    -   Compute the value of the polynomial \$ P(x) \$ at the current approximation using `EvalPoly`.
+    -   Compute the value of the derivative \$ P'(x) \$ at the current approximation using `PolyDerEval`.
+    -   Update the current approximation using Newton's method formula: \$ x\_{k+1} = x_k - \frac{P(x_k)}{P'(x_k)} \$.
+    -   Append the updated approximation to the vector of computed approximations.
+    -   Check the stopping condition: if \$ \|P(x_k)\| \< \texttt{TOL} \$ or \$ k \> 1000 \$, stop the iteration.
+3.  Return the vector of computed approximations.
+
+Here's the implementation of the `NewtonPoly` function:
+
+```{r}
+NewtonPoly <- function(c, x0, TOL) {
+  approximations <- numeric(0)  # Initialize vector of computed approximations
+  x <- x0  # Initial approximation
+  
+  for (k in 1:1000) {
+    # Evaluate P(x) and P'(x) at the current approximation
+    P <- EvalPoly(c, x)
+    P_prime <- PolyDerEval(c, x)
+    
+    # Update the approximation using Newton's method formula
+    x <- x - P / P_prime
+    
+    # Append the updated approximation to the vector
+    approximations <- c(approximations, x)
+    
+    # Check stopping condition
+    if (abs(P) < TOL) {
+      break  # Stop iteration if |P(x_k)| < TOL
+    }
+  }
+  
+  return(approximations)
+}
+```
+
+## Question 6:
+
+Use the function `NewtonPoly` to approximate one of the roots of the polynomial $P(x) = x^3 - 7.1x + 2.3$ with initial approximation $x_0 = -1$ and tolerance $TOL = 10^{-10}$. Print the sequence of approximations computed by Newton's method.
+
+### Answer:
+
+To solve this problem, we'll use the `NewtonPoly` function to approximate one of the roots of the given polynomial. Here's how we'll do it:
+
+1.  Define the coefficients of the polynomial \$ P(x) \$.
+2.  Choose an initial approximation \$ x_0 \$.
+3.  Set the tolerance \$ TOL \$.
+4.  Call the `NewtonPoly` function with the defined coefficients, initial approximation, and tolerance.
+5.  Print the sequence of approximations computed by Newton's method.
+
+Let's proceed with the implementation:
+
+```{r}
+# Define the coefficients of the polynomial P(x)
+coefficients <- c(1, 0, -7.1, 2.3)
+
+# Choose an initial approximation
+x0 <- 7
+
+# Set the tolerance
+TOL <- 1e-10
+
+# Call the NewtonPoly function to compute the sequence of approximations
+sequence <- NewtonPoly(coefficients, x0, TOL)
+
+# Print the sequence of approximations
+print(sequence)
+```
+
+## Question 7:
+
+Now, consider the polynomials $P(1) = x^k$, for $k = 2, \ldots, 10$. Apply Newton's method with $x_0 = 1$ and $TOL = 10^{-12}$ to these polynomials. Plot the number of iterations needed by Newton's method to reach the desired accuracy as a function of the exponent $k$.
+
+We now consider modified Newton's method for the approximation of roots of $P(x)$ that have multiplicity greater than 1 (for example, 0 is a root of multiplicity $k$ of $x^k$). The idea is to apply Newton's method to the function $\frac{P(x)}{P'(x)}$ instead of $P(x)$. This corresponds to an update of the form:
+
+$$
+x_{k+1} = x_k - \frac{P(x_k)P'(x_k)}{(P'(x_k))^2 - P(x_k)P''(x_k)}
+$$
+
+Note that this method requires the second derivative of $P(x)$. .
+
+### Answer:
+
+```{r}
+# Define the vector of exponents k
+k_vec <- 2:10
+
+# Initialize vector to store number of iterations
+no_iter <- numeric()
+
+# Apply Newton's method to each polynomial and store the number of iterations
+for (k in k_vec) {
+  P <- replicate(k + 1, 0)
+  P[1] <- 1
+  x_vec <- NewtonPoly(P, 1, 10^-12)
+  no_iter[k - 1] <- length(x_vec)
+}
+
+# Plot number of iterations vs. exponent k
+plot(k_vec, no_iter, type = "b", xlab = "Exponent k", ylab = "Number of Iterations",
+     main = "Number of Iterations vs. Exponent k")
+```
+
+## Question 8:
+
+Implement a function with the header `PolyDer2Eval <- function(c, x)` that evaluates the second derivative of a polynomial P(x) with coefficients defined by `c`. Test your function on the polynomial P(x) and point x = 2 considered in part 2.
+
+### Answer:
+
+```{r}
+# Define the function PolyDer2Eval
+PolyDer2Eval <- function(c, x) {
+  # Initialize the second derivative
+  derivative2 <- 0
+  # Iterate over coefficients
+  for (i in seq_along(c)) {
+    # Compute the second derivative term contribution and add to derivative2
+    derivative2 <- derivative2 + (length(c) - i) * (length(c) - i - 1) * c[i] * x^(length(c) - i - 2)
+  }
+  return(derivative2)
+}
+
+# Define the coefficients of the polynomial P(x)
+coefficients <- c(3.5, 0, 0, -1.72 + 1)
+
+# Define the point x
+x <- 2
+
+# Call the PolyDer2Eval function to evaluate the second derivative at x
+derivative2 <- PolyDer2Eval(coefficients, x)
+
+# Print the result
+print(derivative2)
+```
+
+## Question 9:
+
+Create a function with the header `ModifiedNewtonPoly <- function(c, x0, TOL)` that implements the modified Newton's method. The stopping criterion should be the same as in `NewtonPoly`.
+
+### Answer:
+
+Here's the implementation of the `ModifiedNewtonPoly` function:
+
+```{r}
+# Define the function ModifiedNewtonPoly
+ModifiedNewtonPoly <- function(c, x0, TOL) {
+  # Initialize vector of computed approximations
+  approximations <- numeric(0)
+  
+  # Initialize iteration counter
+  k <- 0
+  
+  while (TRUE) {
+    # Increment iteration counter
+    k <- k + 1
+    
+    # Compute the value of the polynomial P(x) and its first and second derivatives at the current approximation
+    P <- EvalPoly(c, x0)
+    P_prime <- PolyDerEval(c, x0)
+    P_double_prime <- PolyDer2Eval(c, x0)
+    
+    # Update the current approximation using the modified Newton's method formula
+    x_new <- x0 - (P * P_prime) / ((P_prime)^2 - P * P_double_prime)
+    
+    # Append the updated approximation to the vector of computed approximations
+    approximations <- c(approximations, x_new)
+    
+    # Check stopping criterion
+    if (abs(P) < TOL || k > 1000) {
+      break
+    }
+    
+    # Update x0 for the next iteration
+    x0 <- x_new
+  }
+  
+  return(approximations)
+}
+```
+
+## Question 10:
+
+Repeat the experiment conducted in part 7 using modified Newton's method. What do you observe?
+
+### Answer:
+
+```{r}
+# Define the coefficients of the polynomial P(x)
+coefficients <- c(-1, -7.1, 2.3)
+
+# Choose an initial approximation
+x0 <- 7
+
+# Set the tolerance
+TOL <- 1e-10
+
+# Call the ModifiedNewtonPoly function to compute the sequence of approximations
+sequence <- ModifiedNewtonPoly(coefficients, x0, TOL)
+
+# Print the sequence of approximations
+print(sequence)
+```

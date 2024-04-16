@@ -1,0 +1,182 @@
+---
+title: "Question 5"
+author: "Maharaj Teertha Deb, 40227747"
+date: "`r Sys.Date()`"
+output: pdf_document
+---
+
+# Problem 5
+
+## Part I
+
+### Question i:
+
+To estimate $I = \int_{-2}^{2} e^{x^2 + x} \, dx$, generate 1000 random numbers and use the substitution $y = \frac{x - (-2)}{2 - (-2)}$. Note that $y$ varies in the interval $(0, 1)$.
+
+#### Answer:
+
+```{r}
+# Step 1: Generate 1000 random numbers y
+set.seed(42) # for reproducibility
+y <- runif(1000)
+
+# Step 2: Apply inverse transformation to get x
+x <- -2 + 4 * y
+
+# Step 3: Evaluate the function e^(x^2 + x)
+f_x <- exp(x^2 + x)
+
+# Step 4: Estimate the integral
+I_estimate <- mean(f_x) * 4
+
+# Display the result
+I_estimate
+
+```
+
+### Question ii:
+
+Now generate 1000 random samples from $X \sim U(-2, 2)$ to estimate $I = \int_{-2}^{2} e^{x^2 + x} \, dx$.
+
+#### Answer:
+
+```{r}
+# Generate 1000 random numbers x from U(-2, 2)
+set.seed(42) # for reproducibility
+x <- runif(1000, min = -2, max = 2)
+
+# Step 2: Evaluate the function e^(x^2 + x)
+f_x <- exp(x^2 + x)
+
+# Estimate the integral
+I_estimate <- mean(f_x) * 4
+
+# Display the result
+I_estimate
+
+```
+
+### Question iii:
+
+Furthermore, create an R function `fun()` that implements the mathematical function $f(x) = e^{x^2 + x}$.
+
+Considering `fun()` and applying the syntax `integrate` in R, calculate the definite integral $I = \int_{-2}^{2} e^{x^2 + x} \, dx$ and compare the result with those obtained in parts a. and b.
+
+Comment on your comparisons.
+
+#### Answer:
+
+```{r}
+fun <- function(x) { ## Fun function
+  return(exp(x^2 + x))
+}
+
+
+# Integrate the values.
+result_integrate <- integrate(fun, lower = -2, upper = 2)
+I_integrate <- result_integrate$value
+
+# Display the result
+I_integrate
+```
+
+In part a, the estimate was 88.11145 88.11145. In part b, the estimate was also 88.11145 88.11145. In part c, using the integrate function, the estimate was 93.16275 93.16275. The estimate obtained in part c using the integrate function is higher than the estimates obtained in parts a and b using random sampling.
+
+This discrepancy could be due to several factors:
+
+Sampling Variation: Random sampling methods can introduce variability in the estimate. The estimates in parts a and b might be lower or higher than the true integral due to chance. Accuracy of Integration: The integrate function in R uses numerical techniques that might provide a more accurate estimate of the integral compared to simple random sampling methods used in parts a and b. Function Approximation: The function $f(x) = e^{x^2 + x}$. could be better approximated by numerical integration methods used in part c, leading to a more accurate estimate.
+
+## Part II
+
+### Question i:
+
+Create an R function `fun()` that implements the mathematical function $x \rightarrow f(x) = \cos^3(e x) + \log_{3}(5x) - \arctan(x)$.
+
+#### Answer:
+
+```{r}
+# Define the function fun() to implement the mathematical function
+fun <- function(x) {
+  # Evaluates the function f(x) = cos^3(ex) + log_3(5x) - arctan(x) at given x
+  return (cos(exp(1) * x) ^ 3) + log(5 * x, base = 3) - atan(x)
+}
+
+```
+
+### Question ii:
+
+Using `seq`, create a numeric vector called `grid` containing $N+1$ equispaced points between 1 and 2 (inclusive), where $N = 10^6$. (Do not print the result)
+
+#### Answer:
+
+```{r}
+# Define the number of points N
+N <- 10^6
+
+# Create the grid vector
+grid <- seq(1, 2, length.out = N + 1)
+```
+
+### Question iii:
+
+Create a vector $m = (10, 100, 1000, 10000)$ and 4 vectors `subgrid.1`, `subgrid.2`, `subgrid.3`, and `subgrid.4`, defined as follows:
+
+For every $i$, `subgrid.i` contains $m_i$ points randomly chosen from `grid` (without repetitions) using the built-in function `sample()`.
+
+#### Answer:
+
+```{r}
+# Create vector m
+m <- c(10, 100, 1000, 10000)
+
+# Generating subgrids for each value of m
+subgrid <- lapply(m, function(mi) {
+  # Randomly sample mi points from the grid without replacement
+  return(sample(grid, mi, replace = FALSE))
+})
+```
+
+### Question iv:
+
+Create vectors `eval.1`, `eval.2`, `eval.3`, and `eval.4` containing the evaluations of $f$ at points in `subgrid.1`, `subgrid.2`, `subgrid.3`, and `subgrid.4`. Determine the averages of `eval.1`, `eval.2`, `eval.3`, and `eval.4` in a four-dimensional vector space called `monte.carlo`.
+
+#### Answer:
+
+```{r}
+# Evaluating the function on each subgrid
+eval <- lapply(subgrid, fun)
+
+# Calculating the averages of eval and storing the result in monte.carlo
+monte.carlo <- sapply(eval, mean)
+```
+
+### Question v:
+
+Assume that the exact value of the integral is given by:
+
+$$ I = \int_{1}^{2} f(x) \, dx = \int_{1}^{2} \cos^3(e x) + \log_{3}(5x) - \arctan(x) \, dx = 0.479199 $$
+
+Compare this exact value with the entries of `monte.carlo`. What observations can you make?
+
+#### Answer:
+
+```{r}
+# Exact value of the integral
+exact_value <- 0.479199
+
+# Calculate absolute differences between the exact value and each entry in monte.carlo
+differences <- abs(monte.carlo - exact_value)
+
+# Display the differences
+differences
+
+```
+
+The Monte Carlo estimates obtained for the integral are as follows:
+
+-   For $m = 10$: 0.6159701
+-   For $m = 1000$: 0.8992973
+-   For $m = 10000$: 0.8327343
+-   For $m = 100000$: 0.8466149
+
+These estimates show variability in the approximation of the integral as the number of points sampled increases. Generally, we expect the accuracy of the Monte Carlo estimate to improve with a larger number of samples. However, in this case, the estimate with $m = 1000$ is significantly higher than the others, indicating potential variability or sampling issues. Further investigation may be required to understand the reasons behind these discrepancies.
